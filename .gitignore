@@ -10,3 +10,11 @@ venv/
 # Python cache
 __pycache__/
 *.py[cod]
+
+# Excel files
+*.xlsx
+*.xls
+
+# Json files
+*.json
+
