@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 from typing import List, Dict, Any, Union
 import pandas as pd
+from src.utils.logger import get_logger
 
 if sys.platform == "win32":
     try:
@@ -9,6 +10,8 @@ if sys.platform == "win32":
         sys.stderr.reconfigure(encoding="utf-8")
     except Exception:
         pass
+
+logger = get_logger(__name__)
 
 # danh sách này được lấy từ api của tiktokshop partner center
 # https://partner.tiktokshop.com/docv2/page/get-categories-202309#Back%20To%20Top
@@ -26,10 +29,13 @@ def load_category_data(file_path: Union[str, Path] = DEFAULT_EXCEL_PATH, reload:
     global _CACHED_DF
     path = Path(file_path)
     if not path.exists():
+        logger.error("Không tìm thấy file Excel tại: %s", path)
         raise FileNotFoundError(f"Không tìm thấy file Excel tại: {path}")
 
     if _CACHED_DF is None or reload:
+        logger.debug("Đang load category data từ %s", path)
         _CACHED_DF = pd.read_excel(path)
+        logger.info("Load xong category data: %d dòng", len(_CACHED_DF))
 
     return _CACHED_DF
 
@@ -71,6 +77,8 @@ def search_categories(
                     row[k] = None
                 elif isinstance(v, pd.Timestamp):
                     row[k] = str(v)
+        logger.debug("search_categories('%s') -> %d kết quả", x, len(records))
         return records
 
+    logger.debug("search_categories('%s') -> %d kết quả (DataFrame)", x, len(result_df))
     return result_df

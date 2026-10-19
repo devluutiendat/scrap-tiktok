@@ -1,7 +1,9 @@
 from contextlib import asynccontextmanager
 from typing import Optional
 from playwright.async_api import async_playwright, BrowserContext, Route
+from src.utils.logger import get_logger
 
+logger = get_logger(__name__)
 
 class PlaywrightConfig:
     HEADLESS: bool = False
@@ -18,17 +20,18 @@ class PlaywrightConfig:
 
     BLOCKED_RESOURCE_TYPES = {"image", "media", "font"}
 
-
 async def _block_heavy_resources(route: Route):
     if route.request.resource_type in PlaywrightConfig.BLOCKED_RESOURCE_TYPES:
+        logger.debug("Block resource: type=%s url=%s", route.request.resource_type, route.request.url[:80])
         await route.abort()
     else:
         await route.continue_()
 
-
 @asynccontextmanager
 async def create_playwright_context(block_media: bool = True):
     async with async_playwright() as p:
+        logger.info("Khởi tạo Playwright browser (headless=%s, slow_mo=%d)",
+                    PlaywrightConfig.HEADLESS, PlaywrightConfig.SLOW_MO)
         browser = await p.chromium.launch(
             headless=PlaywrightConfig.HEADLESS,
             slow_mo=PlaywrightConfig.SLOW_MO,
@@ -67,10 +70,14 @@ async def create_playwright_context(block_media: bool = True):
         context.set_default_navigation_timeout(PlaywrightConfig.TIMEOUT)
 
         if block_media:
+            logger.debug("Đang bật chế độ block media/image/font")
             await context.route("**/*", _block_heavy_resources)
 
+        logger.info("Browser context sẵn sàng. proxy=%s, block_media=%s",
+                    PlaywrightConfig.PROXY, block_media)
         try:
             yield context
         finally:
+            logger.info("Đang đóng browser context và browser...")
             await context.close()
             await browser.close()

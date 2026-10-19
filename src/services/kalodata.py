@@ -3,7 +3,11 @@ import sys
 import json
 import requests
 from dotenv import load_dotenv
+from src.utils.logger import get_logger
+
 load_dotenv()
+
+logger = get_logger(__name__)
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
@@ -44,55 +48,53 @@ def get_kalo_data(payload_data: object, url: str, file: str, id_name: str) -> di
 
     try:
         response = requests.post(url, headers=req_headers, json=payload_data, timeout=30)
-        print(f"Status Code: {response.status_code}")
+        logger.info("POST %s -> status=%d", url, response.status_code)
 
         try:
             result = response.json()
         except json.JSONDecodeError:
-            print("Response không phải định dạng JSON:")
-            print(response.text)
+            logger.error("Response không phải định dạng JSON. Body: %s", response.text[:500])
             return None
 
         if not result:
-            print("Response rỗng.")
+            logger.warning("Response rỗng từ %s", url)
             return result
 
         raw_data = result.get("data", result)
-        print(f"[DEBUG] success={result.get('success')} | raw_data type={type(raw_data).__name__}")
+        logger.debug("success=%s | raw_data type=%s", result.get('success'), type(raw_data).__name__)
 
         if isinstance(raw_data, list):
             new_items = raw_data
-            print(f"[DEBUG] data là list, số item nhận về: {len(new_items)}")
+            logger.debug("data là list, số item nhận về: %d", len(new_items))
 
         elif isinstance(raw_data, dict):
             if id_name in raw_data:
                 new_items = [raw_data]
-                print(f"[DEBUG] data là object đơn, id_name='{id_name}' value='{raw_data.get(id_name)}'")
+                logger.debug("data là object đơn, id_name='%s' value='%s'", id_name, raw_data.get(id_name))
             else:
                 new_items = next(
                     (v for v in raw_data.values() if isinstance(v, list)),
                     []
                 )
-                print(f"[DEBUG] data là dict, tìm list con → {len(new_items)} item")
+                logger.debug("data là dict, tìm list con → %d item", len(new_items))
 
         else:
-            print(f"[DEBUG] raw_data không nhận diện được (type={type(raw_data).__name__}), bỏ qua.")
+            logger.warning("raw_data không nhận diện được (type=%s), bỏ qua.", type(raw_data).__name__)
             return result
 
         if not new_items:
-            print("[WARN] Không có item nào để xử lý.")
+            logger.warning("Không có item nào để xử lý từ %s", url)
             return {"added": 0, "skipped": 0, "result": result}
 
         # --- Dedup ---
         existing = _load_existing(file)
         existing_ids = {item.get(id_name) for item in existing if isinstance(item, dict)}
-        print(f"[DEBUG] File hiện tại có {len(existing)} item | existing_ids={existing_ids}")
+        logger.debug("File hiện tại có %d item", len(existing))
 
         added = []
         skipped = 0
         for item in new_items:
             item_id = item.get(id_name) if isinstance(item, dict) else None
-            print(f"[DEBUG] Xử lý item id_name='{id_name}' value='{item_id}'", end=" → ")
             if item_id is not None and item_id in existing_ids:
                 skipped += 1
                 print("BỎ QUA (đã tồn tại)")
@@ -101,17 +103,17 @@ def get_kalo_data(payload_data: object, url: str, file: str, id_name: str) -> di
                 if item_id is not None:
                     existing_ids.add(item_id)
                 added.append(item)
-                print("THÊM MỚI")
+                logger.debug("Thêm mới item id='%s'", item_id)
 
         _save_file(file, existing)
-        print(f"\nThêm mới: {len(added)} item | Bỏ qua (trùng {id_name}): {skipped} item")
-        print(f"Tổng số item trong file: {len(existing)}")
-        print(f"Đã lưu dữ liệu vào {file}")
+        logger.info("Thêm mới: %d item | Bỏ qua (trùng %s): %d item | Tổng trong file: %d",
+                    len(added), id_name, skipped, len(existing))
+        logger.info("Đã lưu dữ liệu vào %s", file)
 
         return {"added": len(added), "skipped": skipped, "result": result}
 
     except requests.exceptions.RequestException as e:
-        print(f"Lỗi khi gửi request: {e}")
+        logger.exception("Lỗi khi gửi request tới %s: %s", url, e)
         return None
 
 URL = "https://www.kalodata.com/openapi/v1/tiktok/creator/rank"
@@ -134,7 +136,7 @@ def get_creator_list(page_number: int = 1, category_id: list = []) -> int:
         "page_number": page_number,
     }
 
-    print(f"\n[creators] Đang lấy trang {page_number}...")
+    logger.info("[creators] Đang lấy trang %d...", page_number)
     resp = get_kalo_data(
         payload_data=payload,
         url=URL,
@@ -143,7 +145,7 @@ def get_creator_list(page_number: int = 1, category_id: list = []) -> int:
     )
 
     if resp is None:
-        print("[creators] Lỗi khi gọi API, dừng lại.")
+        logger.error("[creators] Lỗi khi gọi API, dừng lại.")
         return 0, 0
 
     added = resp.get("added", 0)
@@ -156,20 +158,19 @@ def scrape_all_creators(category_id: list = []):
     page = 1
     total_added = 0
 
-    print("Bắt đầu thu thập danh sách Creator...")
-    print(f"Danh mục: {category_id}")
+    logger.info("Bắt đầu thu thập danh sách Creator... Danh mục: %s", category_id)
 
     while True:
         added, fetched_count = get_creator_list(page_number=page, category_id=category_id)
         total_added += added
-        print(f"[main] Trang {page}: nhận {fetched_count} creator (thêm mới: {added}, tổng mới: {total_added})")
+        logger.info("Trang %d: nhận %d creator (thêm mới: %d, tổng mới: %d)",
+                    page, fetched_count, added, total_added)
 
         if fetched_count < 100:
-            print(f"\n[main] Trang {page}: Số lượng data nhận về ({fetched_count}) < 100 → Dừng vòng lặp.")
+            logger.info("Trang %d: số lượng data nhận về (%d) < 100 → Dừng vòng lặp.",
+                        page, fetched_count)
             break
 
         page += 1
 
-    print("\n" + "=" * 50)
-    print(f"Hoàn tất! Tổng số creator mới thêm: {total_added}")
-    print("=" * 50)
+    logger.info("Hoàn tất! Tổng số creator mới thêm: %d", total_added)
