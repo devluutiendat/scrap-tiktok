@@ -12,7 +12,7 @@
 | **Tên dự án**   | `scrap`                     |
 | **Mục tiêu**    | Thu thập, phân tích và tự động hóa dữ liệu từ bất kỳ nền tảng nào  |
 | **Ngôn ngữ**    | Python (chính)                                       |
-| **Database**    | PostgreSQL                                           |
+| **Database**    | SQLite (via `aiosqlite` + `SQLAlchemy async`)         |
 | **Test**        | `pytest` + `pytest-cov`                             |
 | **Config**      | `python-dotenv` + `.env` (template: `.env.example`) |
 | **Scraping**    | Playwright (async) + httpx/requests + BeautifulSoup |
@@ -20,7 +20,7 @@
 ### Phạm vi dự án
 Dự án bao gồm **ba trụ cột chính**:
 1. **Thu thập dữ liệu** — Scrape/crawl nội dung từ bất kỳ nên tảng nào
-2. **Phân tích dữ liệu** — Xử lý, chuẩn hóa, và lưu trữ dữ liệu vào PostgreSQL
+2. **Phân tích dữ liệu** — Xử lý, chuẩn hóa, và lưu trữ dữ liệu vào SQLite
 
 ### Cấu trúc thư mục chuẩn
 ```
@@ -30,7 +30,7 @@ scrap/
 │   ├── extractors/     # JSON/HTML extractors, response collectors
 │   ├── models/         # Pydantic models / dataclasses
 │   ├── services/       # Business logic (search, profile, trending...)
-│   ├── storage/        # Database adapters (PostgreSQL)
+│   ├── storage/        # Database adapters (SQLite)
 │   ├── utils/          # Helpers, decorators, retry logic
 │   └── logs/           # Log handlers
 ├── config/
@@ -124,7 +124,8 @@ import os
 
 load_dotenv()
 
-DATABASE_URL: str = os.getenv("DATABASE_URL", "")
+# Đường dẫn file SQLite — mặc định lưu trong thư mục data/
+SQLITE_DB_PATH: str = os.getenv("SQLITE_DB_PATH", "data/scrap.db")
 TIKTOK_SESSION_ID: str = os.getenv("TIKTOK_SESSION_ID", "")
 REQUEST_TIMEOUT: float = float(os.getenv("REQUEST_TIMEOUT", "15.0"))
 ```
@@ -176,18 +177,26 @@ async def test_collector_filters_duplicates():
 
 ---
 
-## 6. Database (PostgreSQL)
+## 6. Database (SQLite)
 
-- Dùng **asyncpg** hoặc **SQLAlchemy async** cho kết nối PostgreSQL.
+- Dùng **`aiosqlite`** kết hợp **`SQLAlchemy async`** cho kết nối SQLite bất đồng bộ.
+- File database mặc định đặt tại `data/scrap.db` — cấu hình qua biến `SQLITE_DB_PATH` trong `.env`.
 - Mọi truy vấn phải dùng **parameterized queries** — không bao giờ format string SQL trực tiếp.
-- Có migration script cho schema changes — không sửa DB tay.
+- Dùng `SQLAlchemy` migration (Alembic) cho schema changes — không sửa DB tay.
+- SQLite phù hợp cho môi trường phát triển và scraping quy mô nhỏ-vừa; không cần cài server riêng.
 
 ```python
-# ✅ Đúng — parameterized
-await conn.execute("INSERT INTO videos (id, title) VALUES ($1, $2)", vid_id, title)
+# ✅ Đúng — parameterized với aiosqlite
+async with aiosqlite.connect(settings.SQLITE_DB_PATH) as db:
+    await db.execute(
+        "INSERT INTO videos (id, title) VALUES (?, ?)",
+        (vid_id, title),
+    )
+    await db.commit()
 
 # ❌ Sai — SQL injection risk
-await conn.execute(f"INSERT INTO videos (id, title) VALUES ('{vid_id}', '{title}')")
+async with aiosqlite.connect(settings.SQLITE_DB_PATH) as db:
+    await db.execute(f"INSERT INTO videos (id, title) VALUES ('{vid_id}', '{title}')")
 ```
 
 ---
@@ -210,13 +219,13 @@ await asyncio.sleep(random.uniform(1.0, 3.0))  # Nghỉ ngẫu nhiên 1-3 giây
 ## 8. Git & Bảo mật
 
 - **Không bao giờ commit** file `.env`, session cookies, hay API keys.
-- Đảm bảo `.gitignore` có: `.env`, `*.session`, `data/raw/`, `__pycache__/`, `.venv/`
+- Đảm bảo `.gitignore` có: `.env`, `*.session`, `data/raw/`, `data/*.db`, `__pycache__/`, `.venv/`
 - Message commit: tiếng Anh, theo format `type(scope): description` (Conventional Commits)
 
 ```
 feat(extractor): add field selection support for ResponseCollector
 fix(browser): handle timeout on pagination click
-chore(deps): add asyncpg to requirements.txt
+chore(deps): add aiosqlite to requirements.txt
 ```
 
 ---
@@ -242,4 +251,4 @@ Khi nhận yêu cầu, AI phải:
 
 ---
 
-*Cập nhật lần cuối: 2026-10-18 | Dự án: devluutiendat/scrap*
+*Cập nhật lần cuối: 2026-10-20 | Dự án: devluutiendat/scrap*

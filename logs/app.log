@@ -1,0 +1,67 @@
+2026-10-21 11:36:08 | INFO     | manager.py:110 | Chưa có profile tại 'C:\coding\crapy\data\browser_profile' → mở giao diện để đăng nhập (headless=False)
+2026-10-21 11:37:48 | INFO     | manager.py:141 | Đang mở trang đăng nhập: https://www.kalodata.com/product
+2026-10-21 11:37:52 | INFO     | manager.py:144 | ⏳ Vui lòng đăng nhập trong vòng 300 giây. Đóng cửa sổ browser khi xong để tiếp tục.
+2026-10-21 11:38:36 | INFO     | manager.py:156 | ✅ Cửa sổ đã đóng — kết thúc phiên đăng nhập.
+2026-10-21 11:38:36 | INFO     | manager.py:164 | 💾 Profile đã lưu vào: C:\coding\crapy\data\browser_profile — lần sau sẽ chạy headless=True.
+2026-10-21 11:38:36 | INFO     | manager.py:172 | Đang đóng Camoufox context...
+2026-10-21 11:42:36 | INFO     | manager.py:105 | Tìm thấy profile tại 'C:\coding\crapy\data\browser_profile' → chạy ngầm (headless=True)
+2026-10-21 11:42:43 | INFO     | main.py:29 | Bắt đầu scrape kalodata product, url_keyword='/itemList'
+2026-10-21 11:42:43 | INFO     | main.py:33 | Đang mở trang: https://www.kalodata.com/product
+2026-10-21 11:43:36 | ERROR    | main.py:59 | Lỗi không mong muốn trong run_search_scraper: Locator.is_enabled: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button.ant-pagination-item-link").last
+Traceback (most recent call last):
+  File "C:\coding\crapy\main.py", line 45, in run_search_scraper
+    if await next_btn.is_enabled():
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\async_api\_generated.py", line 19613, in is_enabled
+    await self._impl_obj.is_enabled(timeout=to_milliseconds(timeout))
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_locator.py", line 538, in is_enabled
+    return await self._frame.is_enabled(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_frame.py", line 423, in is_enabled
+    return await self._channel.send(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.is_enabled: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button.ant-pagination-item-link").last
+
+2026-10-21 11:43:36 | INFO     | logger.py:116 | === KẾT THÚC CA CHẠY [kalodata_product_scraper] | Trạng thái: FAILED | Thời gian: 59.48s | Thu thập: 0 | Lỗi: 2 ===
+2026-10-21 11:43:36 | INFO     | manager.py:172 | Đang đóng Camoufox context...
+2026-10-22 08:53:04 | INFO     | manager.py:105 | Tìm thấy profile tại 'C:\coding\crapy\data\browser_profile' → chạy ngầm (headless=True)
+2026-10-22 08:53:11 | INFO     | main.py:29 | Bắt đầu scrape topcv job, url_keyword='/api-featured-jobs'
+2026-10-22 08:53:11 | INFO     | main.py:33 | Đang mở trang: https://www.topcv.vn/
+2026-10-22 08:53:41 | ERROR    | main.py:44 | Lỗi không mong muốn trong run_search_scraper: Page.goto: Timeout 30000ms exceeded.
+Call log:
+  - navigating to "https://www.topcv.vn/", waiting until "load"
+Traceback (most recent call last):
+  File "C:\coding\crapy\main.py", line 34, in run_search_scraper
+    await page.goto(TARGET_URL)
+  File "C:\Users\luuti\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\async_api\_generated.py", line 9869, in goto
+    await self._impl_obj.goto(
+  File "C:\Users\luuti\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_page.py", line 560, in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luuti\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_frame.py", line 156, in goto
+    await self._channel.send(
+  File "C:\Users\luuti\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\luuti\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.goto: Timeout 30000ms exceeded.
+Call log:
+  - navigating to "https://www.topcv.vn/", waiting until "load"
+
+2026-10-22 08:53:41 | INFO     | logger.py:116 | === KẾT THÚC CA CHẠY [topcv_job_scraper] | Trạng thái: FAILED | Thời gian: 37.07s | Thu thập: 0 | Lỗi: 1 ===
+2026-10-22 08:53:41 | INFO     | manager.py:172 | Đang đóng Camoufox context...
+2026-10-22 08:57:09 | INFO     | manager.py:105 | Tìm thấy profile tại 'C:\coding\crapy\data\browser_profile' → chạy ngầm (headless=True)
+2026-10-22 08:57:15 | INFO     | main.py:29 | Bắt đầu scrape topcv job, url_keyword='/api-featured-jobs'
+2026-10-22 08:57:15 | INFO     | main.py:33 | Đang mở trang: https://www.topcv.vn/
+2026-10-22 08:57:33 | INFO     | logger.py:116 | === KẾT THÚC CA CHẠY [topcv_job_scraper] | Trạng thái: SUCCESS | Thời gian: 23.62s | Thu thập: 1 | Lỗi: 0 ===
+2026-10-22 08:57:33 | INFO     | manager.py:172 | Đang đóng Camoufox context...

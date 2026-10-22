@@ -1,52 +1,61 @@
-# 🛒 Scrap TikTok Shop
+﻿# 🕷️ Crapy — Web Scraping Toolkit
 
-Công cụ thu thập dữ liệu TikTok Shop — tìm kiếm danh mục sản phẩm và cào danh sách Creator theo danh mục thông qua API Kalodata.
+Công cụ thu thập và phân tích dữ liệu từ các nền tảng web sử dụng Camoufox (chống bot) và Playwright async.  
+Hiện tại đang scrape **dữ liệu việc làm từ TopCV** thông qua API nội bộ.
 
 ## ✨ Tính năng
 
-- **Tìm kiếm danh mục TikTok Shop** — tra cứu nhanh từ file Excel chứa toàn bộ danh mục TikTok Shop Việt Nam
-- **Cào danh sách Creator** — tự động phân trang, gọi API Kalodata để lấy danh sách Creator xếp hạng theo doanh thu
-- **Chống trùng lặp (Dedup)** — tự động bỏ qua Creator đã tồn tại trong file JSON, chỉ thêm mới
-- **Quản lý trình duyệt** — module Playwright sẵn sàng cho các tác vụ scraping nâng cao
+- **Bắt API Response tự động** — `ResponseCollector` lắng nghe mọi network response khớp URL keyword, tự động trích xuất dữ liệu JSON theo key path tùy chọn
+- **Chống bot (Anti-detection)** — sử dụng Camoufox với fingerprint giả lập, chặn ảnh/font/video để tăng tốc crawl
+- **Quản lý session bền vững** — lần đầu mở trình duyệt thủ công để đăng nhập, các lần sau chạy headless tự động
+- **Lọc trùng lặp (Dedup)** — tự động bỏ qua bản ghi đã tồn tại theo `unique_id_key`
+- **Chọn field linh hoạt** — chỉ trích xuất những trường cần thiết từ response JSON
+- **Lưu kết quả JSON** — output lưu vào `data/processed/` tự động
+- **Theo dõi run (RunTracker)** — ghi lại số lượng thành công/lỗi, lưu summary mỗi lần chạy
 
 ## 📁 Cấu trúc dự án
 
-```
+`
 crapy/
-├── main.py                          # Entry point — CLI tương tác
+├── main.py                          # Entry point — scrape TopCV jobs
 ├── config/
-│   └── settings.py                  # Cấu hình chung (đang mở rộng)
+│   └── settings.py                  # Cấu hình tập trung (python-dotenv)
 ├── src/
-│   ├── brower/
-│   │   └── manager.py               # Quản lý Playwright browser context
-│   ├── extractors/                   # (Dự kiến) Trích xuất dữ liệu từ HTML
-│   ├── models/                       # (Dự kiến) Định nghĩa data model
-│   ├── services/
-│   │   ├── kalodata.py               # Gọi API Kalodata — lấy & lưu Creator
-│   │   └── search.py                 # Tìm kiếm danh mục từ file Excel
-│   └── storage/
-│       └── TikTok_Shop_Category.xlsx # Dữ liệu danh mục TikTok Shop VN
+│   ├── browser/
+│   │   └── manager.py               # Camoufox context factory, stealth browser
+│   ├── extractors/
+│   │   └── json_extractor.py        # ResponseCollector — bắt & trích xuất API response
+│   ├── models/                       # (Mở rộng) Pydantic/dataclass models
+│   ├── services/                     # (Mở rộng) Business logic
+│   ├── storage/                      # (Mở rộng) Database adapters
+│   └── utils/
+│       └── logger.py                # get_logger(), RunTracker
 ├── data/
-│   ├── raw/                          # Dữ liệu thô
-│   └── processed/                    # Dữ liệu đã xử lý
-├── .env                              # Biến môi trường (không commit)
-├── .gitignore
+│   ├── processed/                   # Dữ liệu đã xử lý (jobs.json, ...)
+│   └── browser_profile/             # Persistent browser session (tự sinh, không commit)
+├── logs/
+│   └── errors.log                   # Log lỗi runtime
+├── .agents/
+│   └── skills/
+│       └── update-readme/           # Skill tự động cập nhật README
+├── .env                              # Biến môi trường (KHÔNG commit)
+├── .env.example                     # Template env (PHẢI commit)
 ├── requirements.txt
 └── README.md
-```
+`
 
 ## 🚀 Cài đặt
 
 ### 1. Clone repo
 
-```bash
+`ash
 git clone https://github.com/devluutiendat/scrap-tiktok.git
 cd scrap-tiktok
-```
+`
 
 ### 2. Tạo môi trường ảo
 
-```bash
+`ash
 python -m venv .venv
 
 # Windows
@@ -54,99 +63,94 @@ python -m venv .venv
 
 # macOS/Linux
 source .venv/bin/activate
-```
+`
 
 ### 3. Cài đặt dependencies
 
-```bash
+`ash
 pip install -r requirements.txt
-```
+`
 
-### 4. Cài Playwright browsers (nếu cần dùng module browser)
+### 4. Cấu hình `.env`
 
-```bash
-playwright install chromium
-```
+Tạo file `.env` từ template:
 
-### 5. Cấu hình `.env`
+`ash
+cp .env.example .env
+`
 
-Tạo file `.env` ở thư mục gốc với nội dung:
+Nội dung `.env`:
 
-```env
-# Kalodata API
-SECRET_KEY=your_kalodata_secret_key
+`env
+# Browser / Camoufox
+BROWSER_PROFILE_DIR=data/browser_profile
+BROWSER_TIMEOUT=30000
+
+# Database
+SQLITE_DB_PATH=data/scrap.db
+
+# HTTP
+REQUEST_TIMEOUT=15.0
+
+# TikTok (nếu cần)
+TIKTOK_SESSION_ID=
 
 # Google Sheets (nếu cần)
-GOOGLE_SPREADSHEET_ID=your_spreadsheet_id
+GOOGLE_SPREADSHEET_ID=
 GOOGLE_SERVICE_ACCOUNT=service_account.json
-
-# ERP
-ERP_BASE_URL=https://your-erp-url.com
-API_KEY_ERP=your_erp_api_key
 
 # Gmail (nếu cần)
 GMAIL_USER=
 GMAIL_APP_PASSWORD=
 
 # Gemini AI (nếu cần)
-GEMINI_API_KEY=your_gemini_api_key
-```
+GEMINI_API_KEY=
+`
 
 ## 📖 Sử dụng
 
-### Chạy chương trình với từ khóa tìm kiếm
+### Chạy scraper
 
-```bash
-python main.py <từ khóa danh mục>
-```
-
-**Ví dụ:**
-
-```bash
-python main.py "thời trang"
-```
+`ash
+python main.py
+`
 
 ### Luồng hoạt động
 
-1. Chương trình tìm kiếm danh mục TikTok Shop khớp với từ khóa
-2. Hiển thị danh sách kết quả (ID, tên danh mục, danh mục cha, có phải danh mục lá)
-3. Người dùng chọn danh mục muốn cào (nhập STT, cách nhau bằng dấu phẩy) hoặc nhấn Enter để lấy tất cả danh mục lá
-4. Tự động gọi API Kalodata để thu thập Creator theo danh mục đã chọn
-5. Kết quả được lưu vào file `creators.json` (tự động dedup)
+1. **Lần đầu chạy** — Camoufox mở trình duyệt có giao diện (headless=False) để người dùng đăng nhập thủ công. Profile được lưu tự động vào `data/browser_profile/`
+2. **Các lần sau** — Phát hiện profile đã có → chạy ngầm (headless=True)
+3. `ResponseCollector` bắt đầu lắng nghe network response chứa `/api-featured-jobs`
+4. Playwright mở `https://www.topcv.vn/` — request trang tự động trigger API jobs
+5. Response được bắt, trích xuất các field: `address`, `id`, `salary`, `title`
+6. Kết quả dedup theo `id` và lưu vào `data/processed/jobs.json`
 
-### Ví dụ output
+### Output mẫu
 
-```
- CÔNG CỤ TÌM KIẾM DANH MỤC TIKTOK SHOP
-Tìm thấy 5 kết quả phù hợp với từ khóa 'thời trang':
-
-1. [ID: 601234]
-   - Tên danh mục: Thời trang nữ
-   - Danh mục cha: Thời trang
-   - Là danh mục lá: True
---------------------------------------------------
-
-Nhập STT danh mục muốn cào (cách nhau bằng dấu phẩy, ví dụ: 1,3).
-Để trống và nhấn Enter → lấy tất cả danh mục lá (Là danh mục lá = True):
-Chọn: 1
-
-Đang cào 1 danh mục: ['Thời trang nữ']
-Bắt đầu thu thập danh sách Creator...
-```
+`json
+[
+  {
+    "address": "Hà Nội",
+    "id": 123456,
+    "salary": "15 - 20 triệu",
+    "title": "Python Developer"
+  }
+]
+`
 
 ## 🔧 Công nghệ sử dụng
 
 | Thành phần | Công nghệ |
 |---|---|
 | Ngôn ngữ | Python 3.10+ |
-| HTTP Client | `requests` |
-| Đọc Excel | `pandas` + `openpyxl` |
-| Browser Automation | `playwright` |
-| Quản lý env | `python-dotenv` |
-| API dữ liệu | [Kalodata OpenAPI](https://www.kalodata.com) |
+| Browser Automation | `camoufox[geoip]` >= 0.5.8 (Playwright wrapper) |
+| HTTP Client | `requests` >= 2.31.0 |
+| Đọc Excel | `pandas` >= 2.0.0 + `openpyxl` >= 3.1.0 |
+| Quản lý env | `python-dotenv` >= 1.0.0 |
 
 ## 📝 Ghi chú
 
-- File `creators.json` được lưu ở thư mục gốc, chứa danh sách Creator đã cào (dedup theo `creator_id`)
-- File `TikTok_Shop_Category.xlsx` chứa toàn bộ danh mục TikTok Shop VN — nguồn từ [TikTok Shop Partner Center API](https://partner.tiktokshop.com)
-- Các thư mục `extractors/` và `models/` hiện đang trống, dự kiến mở rộng cho các tính năng scraping nâng cao
+- `data/browser_profile/` lưu session đăng nhập — **không commit** vào git
+- `data/processed/jobs.json` sẽ bị ghi đè mỗi lần chạy nếu không đổi tên
+- Nếu gặp `TimeoutError` khi load trang, tăng `BROWSER_TIMEOUT` trong `.env` (đơn vị: ms)
+- Camoufox tải fingerprint model lần đầu sử dụng (~vài giây) — bình thường
+- Thư mục `models/`, `services/`, `storage/` đang trống, dự kiến mở rộng cho các tính năng scraping khác
