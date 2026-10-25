@@ -65,3 +65,111 @@ Call log:
 2026-10-22 08:57:15 | INFO     | main.py:33 | Đang mở trang: https://www.topcv.vn/
 2026-10-22 08:57:33 | INFO     | logger.py:116 | === KẾT THÚC CA CHẠY [topcv_job_scraper] | Trạng thái: SUCCESS | Thời gian: 23.62s | Thu thập: 1 | Lỗi: 0 ===
 2026-10-22 08:57:33 | INFO     | manager.py:172 | Đang đóng Camoufox context...
+2026-10-23 14:00:57 | INFO     | manager.py:55 | Tìm thấy profile tại 'C:\coding\crapy\data\browser_profile' → chạy ngầm (headless=True)
+2026-10-23 14:01:04 | INFO     | main.py:26 | Bắt đầu scrape topcv job, url_keyword='/api-featured-jobs'
+2026-10-23 14:01:04 | INFO     | main.py:29 | Đang mở trang: https://www.topcv.vn/tim-viec-lam-software-engineering-tai-ha-noi-l1cr257cb258?sort=new&type_keyword=0&sba=1&category_family=r257~b258&locations=l1
+2026-10-23 14:01:29 | WARNING  | main.py:36 | ResponseCollector timeout — chuyển sang HtmlScraper để scrape DOM.
+2026-10-23 14:01:34 | INFO     | logger.py:116 | === KẾT THÚC CA CHẠY [topcv_job_scraper] | Trạng thái: FAILED | Thời gian: 37.2s | Thu thập: 0 | Lỗi: 1 ===
+2026-10-23 14:01:34 | INFO     | manager.py:113 | Đang đóng Camoufox context...
+2026-10-23 14:12:18 | INFO     | manager.py:55 | Tìm thấy profile tại 'C:\coding\crapy\data\browser_profile' → chạy ngầm (headless=True)
+2026-10-23 14:12:24 | INFO     | main.py:26 | Bắt đầu scrape topcv job, url_keyword='/api-featured-jobs'
+2026-10-23 14:12:24 | INFO     | main.py:29 | Đang mở trang: https://www.topcv.vn/tim-viec-lam-software-engineering-tai-ha-noi-l1cr257cb258?sort=new&type_keyword=0&sba=1&category_family=r257~b258&locations=l1
+2026-10-23 14:12:49 | WARNING  | main.py:36 | ResponseCollector timeout — chuyển sang HtmlScraper để scrape DOM.
+2026-10-23 14:12:54 | INFO     | logger.py:116 | === KẾT THÚC CA CHẠY [topcv_job_scraper] | Trạng thái: FAILED | Thời gian: 35.99s | Thu thập: 0 | Lỗi: 1 ===
+2026-10-23 14:12:54 | INFO     | manager.py:113 | Đang đóng Camoufox context...
+2026-10-23 14:18:05 | INFO     | manager.py:55 | Tìm thấy profile tại 'C:\coding\crapy\data\browser_profile' → chạy ngầm (headless=True)
+2026-10-23 14:18:09 | INFO     | main.py:26 | Bắt đầu scrape topcv job, url_keyword='/api-featured-jobs'
+2026-10-23 14:18:09 | INFO     | main.py:29 | Đang mở trang: https://www.topcv.vn/tim-viec-lam-software-engineering-tai-ha-noi-l1cr257cb258?sort=new&type_keyword=0&sba=1&category_family=r257~b258&locations=l1
+2026-10-23 14:18:34 | WARNING  | main.py:36 | ResponseCollector timeout — chuyển sang HtmlScraper để scrape DOM.
+2026-10-23 14:18:39 | INFO     | logger.py:116 | === KẾT THÚC CA CHẠY [topcv_job_scraper] | Trạng thái: FAILED | Thời gian: 33.55s | Thu thập: 0 | Lỗi: 1 ===
+2026-10-23 14:18:39 | INFO     | manager.py:113 | Đang đóng Camoufox context...
+2026-10-23 14:36:18 | INFO     | manager.py:55 | Tìm thấy profile tại 'C:\coding\crapy\data\browser_profile' → chạy ngầm (headless=True)
+2026-10-23 14:36:21 | INFO     | main.py:27 | Bắt đầu scrape topcv job, url_keyword='/api-featured-jobs'
+2026-10-23 14:36:21 | INFO     | main.py:30 | Đang mở trang: https://www.topcv.vn/tim-viec-lam-software-engineering-tai-ha-noi-l1cr257cb258?sort=new&type_keyword=0&sba=1&category_family=r257~b258&locations=l1
+2026-10-23 14:36:47 | WARNING  | main.py:37 | ResponseCollector timeout — chuyển sang HtmlExtractor để scrape DOM.
+2026-10-23 14:36:52 | ERROR    | main.py:70 | Lỗi không mong muốn trong run_search_scraper: Page.wait_for_selector: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator("div.job-item-search") to be visible
+Traceback (most recent call last):
+  File "C:\coding\crapy\main.py", line 63, in run_search_scraper
+    await html_extractor.extract_current_page()
+  File "C:\coding\crapy\src\extractors\html_extractor.py", line 276, in extract_current_page
+    await self.page.wait_for_selector(
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\async_api\_generated.py", line 9053, in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_page.py", line 427, in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_frame.py", line 394, in wait_for_selector
+    await self._channel.send(
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator("div.job-item-search") to be visible
+
+2026-10-23 14:36:52 | INFO     | logger.py:116 | === KẾT THÚC CA CHẠY [topcv_job_scraper] | Trạng thái: FAILED | Thời gian: 34.17s | Thu thập: 0 | Lỗi: 2 ===
+2026-10-23 14:36:52 | INFO     | manager.py:113 | Đang đóng Camoufox context...
+2026-10-23 14:54:11 | INFO     | manager.py:55 | Tìm thấy profile tại 'C:\coding\crapy\data\browser_profile' → chạy ngầm (headless=True)
+2026-10-23 14:54:14 | INFO     | main.py:27 | Bắt đầu scrape topcv job, url_keyword='/api-featured-jobs'
+2026-10-23 14:54:14 | INFO     | main.py:30 | Đang mở trang: https://www.topcv.vn/tim-viec-lam-software-engineering-tai-ha-noi-l1cr257cb258?sort=new&type_keyword=0&sba=1&category_family=r257~b258&locations=l1
+2026-10-23 14:54:38 | WARNING  | main.py:37 | ResponseCollector timeout — chuyển sang HtmlExtractor để scrape DOM.
+2026-10-23 14:54:43 | ERROR    | main.py:70 | Lỗi không mong muốn trong run_search_scraper: Page.wait_for_selector: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator("div.job-item-search") to be visible
+Traceback (most recent call last):
+  File "C:\coding\crapy\main.py", line 63, in run_search_scraper
+    await html_extractor.extract_current_page()
+  File "C:\coding\crapy\src\extractors\html_extractor.py", line 320, in extract_current_page
+    await self.page.wait_for_selector(
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\async_api\_generated.py", line 9053, in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_page.py", line 427, in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_frame.py", line 394, in wait_for_selector
+    await self._channel.send(
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator("div.job-item-search") to be visible
+
+2026-10-23 14:54:43 | INFO     | logger.py:116 | === KẾT THÚC CA CHẠY [topcv_job_scraper] | Trạng thái: FAILED | Thời gian: 32.48s | Thu thập: 0 | Lỗi: 2 ===
+2026-10-23 14:54:43 | INFO     | manager.py:113 | Đang đóng Camoufox context...
+2026-10-23 15:00:06 | INFO     | manager.py:55 | Tìm thấy profile tại 'C:\coding\crapy\data\browser_profile' → chạy ngầm (headless=True)
+2026-10-23 15:00:10 | INFO     | main.py:27 | Bắt đầu scrape topcv job, url_keyword='/api-featured-jobs'
+2026-10-23 15:00:10 | INFO     | main.py:30 | Đang mở trang: https://www.topcv.vn/tim-viec-lam-software-engineering-tai-ha-noi-l1cr257cb258?sort=new&type_keyword=0&sba=1&category_family=r257~b258&locations=l1
+2026-10-23 15:00:35 | WARNING  | main.py:37 | ResponseCollector timeout — chuyển sang HtmlExtractor để scrape DOM.
+2026-10-23 15:00:41 | INFO     | logger.py:116 | === KẾT THÚC CA CHẠY [topcv_job_scraper] | Trạng thái: FAILED | Thời gian: 35.47s | Thu thập: 0 | Lỗi: 1 ===
+2026-10-23 15:00:41 | INFO     | manager.py:113 | Đang đóng Camoufox context...
+2026-10-23 15:04:28 | INFO     | manager.py:55 | Tìm thấy profile tại 'C:\coding\crapy\data\browser_profile' → chạy ngầm (headless=True)
+2026-10-23 15:04:31 | INFO     | main.py:27 | Bắt đầu scrape topcv job, url_keyword='/api-featured-jobs'
+2026-10-23 15:04:31 | INFO     | main.py:30 | Đang mở trang: https://www.topcv.vn/tim-viec-lam-software-engineering-tai-ha-noi-l1cr257cb258?sort=new&type_keyword=0&sba=1&category_family=r257~b258&locations=l1
+2026-10-23 15:04:56 | WARNING  | main.py:37 | ResponseCollector timeout — chuyển sang HtmlExtractor để scrape DOM.
+2026-10-23 15:05:02 | INFO     | logger.py:116 | === KẾT THÚC CA CHẠY [topcv_job_scraper] | Trạng thái: FAILED | Thời gian: 33.82s | Thu thập: 0 | Lỗi: 1 ===
+2026-10-23 15:05:02 | INFO     | manager.py:113 | Đang đóng Camoufox context...
+2026-10-23 15:07:44 | INFO     | manager.py:55 | Tìm thấy profile tại 'C:\coding\crapy\data\browser_profile' → chạy ngầm (headless=True)
+2026-10-23 15:07:48 | INFO     | main.py:27 | Bắt đầu scrape topcv job, url_keyword='/api-featured-jobs'
+2026-10-23 15:07:48 | INFO     | main.py:30 | Đang mở trang: https://www.topcv.vn/tim-viec-lam-software-engineering-tai-ha-noi-l1cr257cb258?sort=new&type_keyword=0&sba=1&category_family=r257~b258&locations=l1
+2026-10-23 15:08:13 | WARNING  | main.py:37 | ResponseCollector timeout — chuyển sang HtmlExtractor để scrape DOM.
+2026-10-23 15:08:19 | INFO     | logger.py:116 | === KẾT THÚC CA CHẠY [topcv_job_scraper] | Trạng thái: FAILED | Thời gian: 35.23s | Thu thập: 0 | Lỗi: 1 ===
+2026-10-23 15:08:19 | INFO     | manager.py:113 | Đang đóng Camoufox context...
+2026-10-23 15:41:09 | INFO     | manager.py:55 | Tìm thấy profile tại 'C:\coding\crapy\data\browser_profile' → chạy ngầm (headless=True)
+2026-10-23 15:41:13 | INFO     | main.py:27 | Bắt đầu scrape topcv job, url_keyword='/api-featured-jobs'
+2026-10-23 15:41:13 | INFO     | main.py:30 | Đang mở trang: https://www.topcv.vn/tim-viec-lam-software-engineering-tai-ha-noi-l1cr257cb258?sort=new&type_keyword=0&sba=1&category_family=r257~b258&locations=l1
+2026-10-23 15:41:41 | WARNING  | main.py:37 | ResponseCollector timeout — chuyển sang HtmlExtractor để scrape DOM.
+2026-10-23 15:41:47 | INFO     | logger.py:116 | === KẾT THÚC CA CHẠY [topcv_job_scraper] | Trạng thái: FAILED | Thời gian: 37.4s | Thu thập: 0 | Lỗi: 1 ===
+2026-10-23 15:41:47 | INFO     | manager.py:113 | Đang đóng Camoufox context...
+2026-10-23 15:53:08 | INFO     | manager.py:55 | Tìm thấy profile tại 'C:\coding\crapy\data\browser_profile' → chạy ngầm (headless=True)
+2026-10-23 15:53:12 | INFO     | main.py:27 | Bắt đầu scrape topcv job, url_keyword='/api-featured-jobs'
+2026-10-23 15:53:12 | INFO     | main.py:30 | Đang mở trang: https://www.topcv.vn/tim-viec-lam-software-engineering-tai-ha-noi-l1cr257cb258?sort=new&type_keyword=0&sba=1&category_family=r257~b258&locations=l1
+2026-10-23 15:53:36 | WARNING  | main.py:37 | ResponseCollector timeout — chuyển sang HtmlExtractor để scrape DOM.
+2026-10-23 15:53:37 | INFO     | logger.py:116 | === KẾT THÚC CA CHẠY [topcv_job_scraper] | Trạng thái: SUCCESS | Thời gian: 28.61s | Thu thập: 1 | Lỗi: 0 ===
+2026-10-23 15:53:37 | INFO     | manager.py:113 | Đang đóng Camoufox context...

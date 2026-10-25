@@ -1,13 +1,13 @@
 12
 
 https://www.topcv.vn/topcvgtg/_/service_worker
-https://www.topcv.vn/topcvgtg/_/service_worker/6a60/sw.js?path=%2Ftopcvgtg
+https://www.topcv.vn/topcvgtg/_/service_worker/6al0/sw.js?path=%2Ftopcvgtg
 false
-{d557b279-96b9-42ad-8620-c6230af897ed}
+{3545fb8d-eb95-4c8a-b4f1-2dc3ba6447c6}
 1
-1792634239235898
-1792634239237764
-1792634239085121
+1792739548291909
+1792739548294168
+1792739548095679
 0
 true
 0

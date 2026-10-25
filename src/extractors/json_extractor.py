@@ -1,11 +1,16 @@
 import asyncio
-import json
+import logging
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
+
 from playwright.async_api import Page, Response
 
+from src.extractors.base_extractor import BaseExtractor
 
-class ResponseCollector:
+logger = logging.getLogger(__name__)
+
+
+class ResponseCollector(BaseExtractor):
 
     def __init__(
         self,
@@ -76,18 +81,18 @@ class ResponseCollector:
                 self.collected_data.append(clean_item)
                 new_count += 1
 
-            print(f"[+] Bắt được API [{self.url_keyword}] -> Thêm {new_count} bản ghi mới (Tổng: {len(self.collected_data)})")
+            logger.info("Bắt được API [%s] -> Thêm %d bản ghi mới (Tổng: %d)", self.url_keyword, new_count, len(self.collected_data))
             
             # Phát tín hiệu báo đã nhận được dữ liệu
             self.packet_received_event.set()
 
         except Exception as e:
-            print(f"[!] Lỗi khi xử lý JSON từ {response.url}: {e}")
+            logger.error("Lỗi khi xử lý JSON từ %s: %s", response.url, e)
 
     def start_listening(self):
         """Bắt đầu gắn tai nghe vào Page"""
         self.page.on("response", self._on_response)
-        print(f"[*] Đang lắng nghe mọi Response chứa x='{self.url_keyword}', chờ lấy y='{self.target_key_path}'...")
+        logger.info("Đang lắng nghe Response chứa url_keyword='%s', target_key_path='%s'", self.url_keyword, self.target_key_path)
 
     def stop_listening(self):
         """Gỡ tai nghe khỏi Page để giải phóng RAM"""
@@ -100,12 +105,5 @@ class ResponseCollector:
             await asyncio.wait_for(self.packet_received_event.wait(), timeout=timeout)
             return True
         except asyncio.TimeoutError:
-            print(f"[!] Quá thời gian chờ ({timeout}s) mà không thấy gói tin chứa '{self.url_keyword}'")
+            logger.warning("Quá thời gian chờ (%.1fs) mà không thấy gói tin chứa '%s'", timeout, self.url_keyword)
             return False
-
-    def save_to_json(self):
-        """BƯỚC 5: Lưu toàn bộ dữ liệu thu thập được vào file JSON"""
-        self.output_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(self.output_path, mode="w", encoding="utf-8") as f:
-            json.dump(self.collected_data, f, ensure_ascii=False, indent=2)
-        print(f"[✓] Đã lưu tổng cộng {len(self.collected_data)} bản ghi vào file: {self.output_path}")

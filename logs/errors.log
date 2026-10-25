@@ -44,3 +44,51 @@ playwright._impl._errors.TimeoutError: Page.goto: Timeout 30000ms exceeded.
 Call log:
   - navigating to "https://www.topcv.vn/", waiting until "load"
 
+2026-10-23 14:36:52 | ERROR    | main.py:70 | Lỗi không mong muốn trong run_search_scraper: Page.wait_for_selector: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator("div.job-item-search") to be visible
+Traceback (most recent call last):
+  File "C:\coding\crapy\main.py", line 63, in run_search_scraper
+    await html_extractor.extract_current_page()
+  File "C:\coding\crapy\src\extractors\html_extractor.py", line 276, in extract_current_page
+    await self.page.wait_for_selector(
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\async_api\_generated.py", line 9053, in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_page.py", line 427, in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_frame.py", line 394, in wait_for_selector
+    await self._channel.send(
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator("div.job-item-search") to be visible
+
+2026-10-23 14:54:43 | ERROR    | main.py:70 | Lỗi không mong muốn trong run_search_scraper: Page.wait_for_selector: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator("div.job-item-search") to be visible
+Traceback (most recent call last):
+  File "C:\coding\crapy\main.py", line 63, in run_search_scraper
+    await html_extractor.extract_current_page()
+  File "C:\coding\crapy\src\extractors\html_extractor.py", line 320, in extract_current_page
+    await self.page.wait_for_selector(
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\async_api\_generated.py", line 9053, in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_page.py", line 427, in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_frame.py", line 394, in wait_for_selector
+    await self._channel.send(
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\crapy\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator("div.job-item-search") to be visible
+

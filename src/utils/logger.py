@@ -93,6 +93,10 @@ class RunTracker:
             "message": str(error)
         })
 
+    def clear_errors(self) -> None:
+        """Xóa toàn bộ errors đã ghi — dùng khi fallback thành công và muốn trạng thái là SUCCESS."""
+        self.errors.clear()
+
     def save_summary(self):
         end_time = datetime.now()
         duration = round((end_time - self.start_time).total_seconds(), 2)

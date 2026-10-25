@@ -237,8 +237,68 @@ Khi nhận yêu cầu, AI phải:
 1. **Đọc lại context** — hiểu code hiện tại trước khi đề xuất
 2. **Đề xuất hướng giải quyết** — không code ngay nếu yêu cầu mơ hồ
 3. **Implement** — theo đúng phong cách đã định nghĩa ở trên
-4. **Kèm test** — luôn viết unit test cho code mới
-5. **Giải thích thay đổi** — tóm tắt những gì đã thay đổi và tại sao
+4. **Thêm Demo Runner** — **BẮT BUỘC** kích hoạt skill `add-demo-runner` sau khi tạo file Python mới
+5. **Dọn dẹp code** — **BẮT BUỘC** kích hoạt skill `code-cleanup` sau mỗi lần thay đổi code
+6. **Kèm test** — luôn viết unit test cho code mới
+7. **Giải thích thay đổi** — tóm tắt những gì đã thay đổi và tại sao
+8. **Cập nhật README** — **BẮT BUỘC** kích hoạt skill `update-readme` sau mỗi lần hoàn thành implement
+
+### ⚠️ Quy tắc Demo Runner (KHÔNG ĐƯỢC BỎ QUA)
+
+Mỗi file Python mới **PHẢI** kết thúc bằng block có thể chạy thẳng:
+
+```python
+async def _demo() -> None:
+    """Demo nhanh: python <tên_file>.py"""
+    # Dùng mock cho external deps (browser, HTTP, DB)
+    ...
+    print("✅ Demo hoàn thành!")
+
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(_demo())   # hoặc _demo() nếu sync
+```
+
+Điều kiện kích hoạt skill `add-demo-runner`:
+- Tạo file Python mới trong `src/`
+- Thêm class hoặc function public mới quan trọng vào file hiện có
+
+### ⚠️ Quy tắc dọn dẹp code (KHÔNG ĐƯỢC BỎ QUA)
+
+Sau mỗi lần thay đổi code, AI **PHẢI** chạy skill `code-cleanup` để loại bỏ:
+
+- Import không còn được dùng
+- Biến / tham số / attribute được gán nhưng không tham chiếu
+- Dead code: method/function định nghĩa nhưng không gọi ở đâu
+- Flag/state tạm thời còn sót lại sau refactor
+- Comment/docstring mô tả logic cũ đã bị thay thế
+
+**Quy trình bắt buộc khi cleanup:**
+1. Chạy `pyflakes` để phát hiện import và biến thừa
+2. Dùng `grep_search` kiểm tra dead references thủ công
+3. Chạy `py_compile` để xác nhận syntax hợp lệ sau khi xóa
+4. Báo cáo những gì đã xóa/cập nhật
+
+Điều kiện kích hoạt skill `code-cleanup`:
+- Sau bất kỳ lần refactor, merge method, hoặc xóa tham số nào
+- Khi user yêu cầu "dọn code", "cleanup", "xóa phần thừa"
+- Sau khi implement tính năng mới có thay thế logic cũ
+
+### ⚠️ Quy tắc cập nhật README (KHÔNG ĐƯỢC BỎ QUA)
+
+Sau khi hoàn thành bất kỳ tác vụ coding nào có thay đổi ít nhất 1 trong các mục sau, AI **PHẢI** chạy skill `update-readme`:
+
+- Thêm / xóa / đổi tên file hoặc thư mục trong `src/`
+- Thêm dependency mới vào `requirements.txt`
+- Thêm biến mới vào `.env.example`
+- Thay đổi cách chạy chương trình (`main.py`)
+- Thêm / xóa tính năng đáng kể
+
+**Quy trình bắt buộc khi cập nhật README:**
+1. Đọc skill `update-readme` tại `.agents/skills/update-readme/SKILL.md`
+2. Quét cấu trúc thư mục thực tế bằng `list_dir`
+3. Đọc `requirements.txt`, `.env.example`, `main.py` để lấy thông tin chính xác
+4. Viết lại `README.md` phản ánh đúng trạng thái hiện tại — **không copy-paste cũ**
 
 ### Những điều AI KHÔNG được làm
 - Xóa comment/docstring cũ
@@ -248,7 +308,9 @@ Khi nhận yêu cầu, AI phải:
 - Bỏ qua exceptions (silent errors)
 - Viết code thiếu type hints
 - Tự refactor code ngoài phạm vi yêu cầu
+- Để lại import thừa, dead code, hay attribute không tồn tại sau khi thay đổi
+- **Hoàn thành coding mà KHÔNG cập nhật README.md**
 
 ---
 
-*Cập nhật lần cuối: 2026-10-20 | Dự án: devluutiendat/scrap*
+*Cập nhật lần cuối: 2026-10-23 | Dự án: devluutiendat/scrap*
